@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+body {
+    box-sizing: border-box;
+   
+}
+
+button{
+    cursor: pointer;
+}
+input{
+    outline: none;
+    
+}
+
+
+/* snipet to fix web browser autofill feature overrides the input's style */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+input:-webkit-autofill::first-line{
+    transition: background-color 5000s ease-in-out 0s;
+    -webkit-text-fill-color: rgb(156, 163, 175) !important; 
+    font-size: 1.125rem; /* 1.125rem = 18px */
+    line-height: 1.75rem;
+    /*zoom:1.125;*/
+
+    color: rgb(156, 163, 175) !important;
+    -webkit-box-shadow: 0 0 0 30px rgb(17, 24, 39) inset !important;
+    caret-color: rgb(156, 163, 175) !important; /* This fixes the cursor */
+}
+
+
+@layer components{
+    .action-button{
+        @apply select-none text-xl text-white font-semibold rounded-lg w-full py-2 mb-10
+           bg-gradient-to-r from-green-400 to-green-800
+           transition-all duration-200
+           enabled:hover:brightness-[102%]
+           enabled:hover:cursor-pointer
+           enabled:hover:scale-[1.001]
+           enabled:shadow-sm shadow-green-700
+           disabled:opacity-70;
+    }
+}

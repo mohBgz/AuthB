@@ -1,0 +1,44 @@
+import { create } from "zustand";
+import axios from "axios";
+
+const API_URL = "http://localhost:5000/api/auth";
+
+axios.defaults.withCredentials = true;
+
+// export const useAuthStore = create((set, get) => ({
+//   user: null,
+//   isAuthenticated: false,
+//   error: null,
+//   isLoading: false,
+//   isCheckingAuth: true,
+
+//   createApp: async (name, password, name, role = "developer", apiKey = null) => {
+//     set({ isLoading: true, error: null });
+
+//     const config = apiKey ? { headers: { "x-api-key": apiKey } } : {};
+
+//     try {
+//       const respose = await axios.post(
+//         `${API_URL}/signup`,
+//         {
+//           email,
+//           password,
+//           name,
+//           role,
+//         },
+//         config
+//       );
+//       set({ user: respose.data.user, isAuthenticated: true, isLoading: false });
+//     } catch (error) {
+//       console.log(error.message);
+//       set({
+//         error: error.response.data.message || "Error signing up",
+//         isLoading: false,
+//       });
+//       throw error;
+//     }
+//   },
+
+
+
+// }));
