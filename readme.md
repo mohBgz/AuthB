@@ -20,12 +20,22 @@ Auth B is currently being developed into a **modular API**, including both backe
 
 ---
 
-## Screenshots / Demo
+## Demo Videos
 
-> (Section intentionally left empty for now)
+### Sign Up
+https://github.com/user-attachments/assets/signup-demo.mp4
 
-> Note: For now, email features (2FA, password reset) use AWS SES sandbox and can only send to verified email addresses. These features cannot be fully tested publicly.
+### Login
+https://github.com/user-attachments/assets/login-demo.mp4
 
+### Password Reset
+https://github.com/user-attachments/assets/password-reset-demo.mp4
+
+### Dashboard
+https://github.com/user-attachments/assets/dashboard-demo.mp4
+
+> **Note:**  
+> Email-based features (2FA, password reset) are demonstrated using verified email addresses due to **AWS SES sandbox restrictions**.
 ---
 
 ## Security Notice
