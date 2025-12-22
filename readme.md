@@ -1,6 +1,6 @@
-# Auth B
+# AuthB
 
-Auth B is a secure authentication platform built on the **MERN stack**. It provides robust sign-in and login functionality with modern security features.
+AuthB is a secure authentication platform built on the **MERN stack**. It provides robust sign-in and login functionality with modern security features.
 
 ---
 
