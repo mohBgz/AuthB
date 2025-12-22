@@ -15,27 +15,32 @@ AuthB is a secure authentication platform built on the **MERN stack**. It provid
 
 ## Project Status
 
-🚧 Work in progress.  
-Auth B is currently being developed into a **modular API**, including both backend and UI components.
+🚧 **Work in progress**  
+
+- Auth B is currently being developed as a **modular authentication API**.  
+- At this stage, the application is **fully functional for authentication flows only** (sign up, login, password reset, 2FA).  
+- The project is **not deployed**; at the moment, **only the frontend can be tested locally**, while backend email-based features are limited to verified addresses.  
+- Both backend services and UI components are actively evolving.
+
+> **Note:**  
+> Email-based features (2FA, password reset) are demonstrated using verified email addresses due to **AWS SES sandbox restrictions**.
 
 ---
 
 ## Demo Videos
 
 ### Sign Up
-https://github.com/user-attachments/assets/signup-demo.mp4
+https://github.com/user-attachments/assets/d646c4fd-c95b-4411-9c66-481f8367b127
 
 ### Login
-https://github.com/user-attachments/assets/login-demo.mp4
+https://github.com/user-attachments/assets/6d035e47-329b-48b3-a804-4af65e03a7b9
 
 ### Password Reset
-https://github.com/user-attachments/assets/password-reset-demo.mp4
+https://github.com/user-attachments/assets/170144c7-1e49-4a52-8e84-8cef4c39512b
 
-### Dashboard
-https://github.com/user-attachments/assets/dashboard-demo.mp4
+### App Creation
+https://github.com/user-attachments/assets/665466ec-df09-4a77-b6e4-5f65f734e05d
 
-> **Note:**  
-> Email-based features (2FA, password reset) are demonstrated using verified email addresses due to **AWS SES sandbox restrictions**.
 ---
 
 ## Security Notice
