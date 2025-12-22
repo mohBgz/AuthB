@@ -30,16 +30,16 @@ Both backend services and UI components are actively evolving.
 ## Demo Videos
 
 ### Sign Up
-https://github.com/mohBgz/AuthB/issues/1#issue-3755276621
+https://github.com/user-attachments/assets/d646c4fd-c95b-4411-9c66-481f8367b127
 
 ### Login
-https://github.com/mohBgz/AuthB/issues/2#issue-3755277649
+https://github.com/user-attachments/assets/6d035e47-329b-48b3-a804-4af65e03a7b9
 
 ### Password Reset
-https://github.com/mohBgz/AuthB/issues/3#issue-3755279067
+https://github.com/user-attachments/assets/170144c7-1e49-4a52-8e84-8cef4c39512b
 
 ### App Creation
-https://github.com/mohBgz/AuthB/issues/4#issue-3755280303
+https://github.com/user-attachments/assets/665466ec-df09-4a77-b6e4-5f65f734e05d
 
 ---
 
