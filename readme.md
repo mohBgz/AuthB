@@ -49,7 +49,7 @@ https://github.com/user-attachments/assets/6d035e47-329b-48b3-a804-4af65e03a7b9
 ### Password Reset
 https://github.com/user-attachments/assets/170144c7-1e49-4a52-8e84-8cef4c39512b
 
-### App Creation
+### Dashboard
 https://github.com/user-attachments/assets/bf054def-68d2-4910-803f-a99821ebe600
 
 ---
