@@ -35,6 +35,7 @@ const VerifyEmail = () => {
 
   useEffect(() => {
     useAuthStore.setState({ error: null });
+   
   }, []);
 
   //focus the first input when component mounts
@@ -293,6 +294,7 @@ const VerifyEmail = () => {
 
             <div className="flex gap-1">
               <motion.button
+              disabled={!canResendOtp || isLoading}
                 key="resend"
                 layout
                 // initial={{ opacity: 0 }}

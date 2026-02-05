@@ -16,7 +16,7 @@ import VerifyEmail from "./pages/VerifyEmail.jsx";
 import ForgotPassword from "./pages/ForgotPassword.jsx";
 import ResetPassword from "./pages/ResetPassword.jsx";
 
-import CreateApp from "./pages/app/CreateApp.jsx";
+
 
 import FloatingShape from "./components/FloatingShape.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
@@ -27,15 +27,18 @@ import { useAuthStore } from "./store/auth-store.js";
 import { useEffect } from "react";
 
 const RedirectVerifiedUsers = ({ children }) => {
-  const { isAuthenticated, user, isCheckingAuth, resendOTP } = useAuthStore();
+  const { isAuthenticated, user, requiresVerification } = useAuthStore();
 
   // if (isCheckingAuth) {
   //   return <div>Loading...</div>;
   // }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated && !requiresVerification) {
+    console.log("requires verification = ",requiresVerification);
     return <Navigate to="/login" replace />;
   }
+
+ 
 
   if (user?.isVerified) {
     return <Navigate to="/" replace />;
@@ -88,20 +91,26 @@ const RedirectAuthenticatedUser = ({ children }) => {
 const  App = () => {
   const { user, isCheckingAuth, checkAuth, isAuthenticated } = useAuthStore();
   const location = useLocation();
-  useEffect(() => {
+  useEffect(() => async () => {
     console.log("checking auth ?", isCheckingAuth);
-
-    checkAuth();
+try {
+  await checkAuth();
+  
+} catch (error) {
+  console.error("Error during auth check in App.jsx:", error);
+}
+    
+    
   }, [checkAuth]);
 
   if (isCheckingAuth) return <LoadingSpinner />;
 
-  console.log(location.pathname); // e.g., "/signup"
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-green-950 to-emerald-900 flex items-center justify-center relative overflow-hidden">
       {location.pathname === "/" && <Header />}
-      {/* <FloatingShape color="bg-green-500" 
+      <FloatingShape color="bg-green-500" 
           size="w-64 h-64"
           top="-5%"
           left="10%"
@@ -120,7 +129,7 @@ const  App = () => {
           top="40%"
           left="-10%"
           delay={15} 
-        /> */}
+        />
 
       <Routes>
         <Route path="/" element={<Dashboard />} />
@@ -165,14 +174,7 @@ const  App = () => {
           }
         />
 
-        {/* <Route
-          path="/create-app"
-          element={
-            <ProtectedRoute>
-              <CreateApp />
-            </ProtectedRoute>
-          }
-        /> */}
+      
         {/* Catch-all route for unmatched paths */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>

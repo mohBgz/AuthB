@@ -1,15 +1,8 @@
 import mongoose from "mongoose";
 
-const usersSchema = new mongoose.Schema(
+const devUserSchema = new mongoose.Schema(
 	{
-		appId: {
-			// which client app this user belongs to - is sign uped under
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "ClientApp",
-			required: true,
-			index: true,
-		},
-		email: { type: String, required: true },
+		email: { type: String, required: true, unique: true },
 		password: { type: String, required: true },
 		name: { type: String, required: true },
 		lastLogin: { type: Date, default: Date.now },
@@ -30,5 +23,4 @@ const usersSchema = new mongoose.Schema(
 	{ timestamps: true },
 );
 
-usersSchema.index({ appId: 1, email: 1 }, { unique: true });
-export const User = mongoose.model("User", usersSchema);
+export const DevUser = mongoose.model("DevUser", devUserSchema);

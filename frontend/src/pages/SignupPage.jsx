@@ -9,6 +9,7 @@ import Input from "../components/Input.jsx";
 import PasswordStrengthMeter from "../components/PasswordStrengthMeter.jsx";
 import { useAuthStore } from "../store/auth-store.js";
 import { useEffect } from "react";
+import toast from "react-hot-toast";
 
 const SignupPage = () => {
   const opacityVariants = {
@@ -47,14 +48,15 @@ const SignupPage = () => {
 
   const handleSignup = async (e) => {
     e.preventDefault();
-
+    
     try {
       await signup(email, password, name);
       buttonRef.current.disabled = true;
 
-      navigate("/verify-email", { state: { fromSignup: true } });
+      
     } catch (error) {
-      console.log(error);
+      
+			console.error(error);
     }
   };
 
@@ -137,7 +139,8 @@ const SignupPage = () => {
 
         <button
           type="submit"
-          disabled={isLoading || !recaptchaVal } // if is loading  or captcha is null
+          disabled={isLoading } //testing
+          // disabled={isLoading || !recaptchaVal } // if is loading  or captcha is null
           ref={buttonRef}
           className="action-button"
         >

@@ -1,40 +1,85 @@
 import { create } from "zustand";
 import axios from "axios";
+import toast from "react-hot-toast";
 
-const API_URL = "http://localhost:5000/api/auth";
+const API_URL = "http://localhost:5000/api/dashboard";
 
 axios.defaults.withCredentials = true;
 
 export const useAuthStore = create((set, get) => ({
+  // --- AUTH STATE ---
   user: null,
   isAuthenticated: false,
   error: null,
   isLoading: false,
   isCheckingAuth: true,
+  requiresVerification: false,
+  sessionExpiredNotified: false, 
 
-  signup: async (email, password, name, role = "developer", apiKey = null) => {
+  // --- APPS STATE ---
+  apps: [],
+  isLoadingApps: false,
+  appError: null,
+
+  // --- SETTERS ---
+  setAuthError: (error) => set({ error }),
+  setAppError: (appError) => set({ appError }),
+
+  // --- AUTH METHODS ---
+  signup: async (email, password, name, apiKey = null) => {
     set({ isLoading: true, error: null });
 
     const config = apiKey ? { headers: { "x-api-key": apiKey } } : {};
 
     try {
-      const respose = await axios.post(
+      const response = await axios.post(
         `${API_URL}/signup`,
-        {
-          email,
-          password,
-          name,
-          role,
-        },
+        { email, password, name },
         config
       );
-      set({ user: respose.data.user, isAuthenticated: true, isLoading: false });
-    } catch (error) {
-      console.log(error.message);
+
       set({
-        error: error.response.data.message || "Error signing up",
+        user: response.data.user,
+        isAuthenticated: true,
         isLoading: false,
       });
+    } catch (error) {
+      console.error("Signup error:", error);
+      if (error.response?.status === 409) set({ requiresVerification: true });
+
+      set({
+        error: error.response?.data?.message || "Error signing up",
+        isLoading: false,
+        user: null,
+        isAuthenticated: false,
+      });
+      throw error;
+    }
+  },
+
+  login: async (email, password) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      const response = await axios.post(`${API_URL}/login`, { email, password });
+
+      set({
+        user: response.data.user,
+        isAuthenticated: true,
+        error: null,
+        isLoading: false,
+      });
+    } catch (error) {
+      if (error.response?.status === 403) set({ requiresVerification: true });
+
+      set({
+        error: error.response?.data?.message || "Error logging in",
+        isLoading: false,
+        user: null,
+        isAuthenticated: false,
+      });
+
+      console.error("Login error:", error);
       throw error;
     }
   },
@@ -49,52 +94,31 @@ export const useAuthStore = create((set, get) => ({
         user: response.data.user,
         isAuthenticated: true,
         isLoading: false,
-      });
-      console.log("user: verified => ", get().user);
-      return response.data;
-    } catch (error) {
-      console.log(error);
-      set({
-        error: error.response?.data?.message || "Error verifying Email",
-        isLoading: false,
+        requiresVerification: false,
       });
 
-      console.log("state after error", get());
+      console.log("User verified =>", get().user);
+      return response.data;
+    } catch (error) {
+      console.error("Verify email error:", error);
+      set({ error: "Error verifying email", isLoading: false });
       throw error;
     }
   },
 
   resendOtp: async () => {
+    set({ isLoading: true, error: null });
     try {
-      set({ isLoading: true, error: null }); // Reset error state when starting
-
       const response = await axios.post(`${API_URL}/resend-otp`, {
-        email: get().user?.email, // Safely access email
+        email: get().user?.email,
       });
 
-      // Only update state if request was successful
-      set({
-        isLoading: false,
-        error: null,
-      });
-
-      return response.data; // Return the response data for potential use
+      set({ isLoading: false, error: null });
+      return response.data;
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.message ||
-        error.message ||
-        "Failed to resend OTP";
-
-      set({
-        isLoading: false,
-        error: errorMessage,
-      });
-
-      // Returning the error instead of throwing if we want callers to handle it
-      //return { error: errorMessage };
-
-      //OR if we prefer throwing:
-      throw new Error(errorMessage);
+      console.error("resendOtp error:", error);
+      set({ isLoading: false, error: "Failed to resend OTP" });
+      throw error;
     }
   },
 
@@ -103,46 +127,22 @@ export const useAuthStore = create((set, get) => ({
 
     try {
       const response = await axios.get(`${API_URL}/check-auth`);
-
       set({
-        user: response.data.message,
+        user: response?.data?.user || null,
         isCheckingAuth: false,
         isAuthenticated: true,
+        sessionExpiredNotified: false,
       });
       return response;
     } catch (error) {
       console.error("checkAuth error:", error);
-
       set({ error: null, isCheckingAuth: false, isAuthenticated: false });
-    }
-  },
-
-  login: async (email, password) => {
-    set({ isLoading: true, error: null });
-    try {
-      const response = await axios.post(`${API_URL}/login`, {
-        email,
-        password,
-      });
-
-      set({
-        isAuthenticated: true,
-        user: response.data.user,
-        error: null,
-        isLoading: false,
-      });
-    } catch (error) {
-      set({
-        error: error.response?.data?.message || "error loging in",
-        isLoading: false,
-      });
       throw error;
     }
   },
 
   logout: async () => {
     set({ isLoading: true });
-
     try {
       await axios.post(`${API_URL}/logout`);
       set({
@@ -150,48 +150,129 @@ export const useAuthStore = create((set, get) => ({
         isAuthenticated: false,
         isLoading: false,
         error: null,
+        sessionExpiredNotified: false,
       });
     } catch (error) {
-      set({
-        isAuthenticated: true,
-        isLoading: false,
-        error: error.data.message,
-      });
+      console.error("logout error:", error);
+      set({ error: "Error logging out", isAuthenticated: true, isLoading: false });
       throw error;
     }
   },
 
   forgotPassword: async (email) => {
     set({ isLoading: true, error: null });
-
     try {
-      const response = await axios.post(`${API_URL}/forgot-password`, {
-        email,
-      });
-      console.log("response forgot-password : ", response);
+      await axios.post(`${API_URL}/forgot-password`, { email });
       set({ isLoading: false });
     } catch (error) {
-      console.error("react ! ", error);
-      set({
-        isLoading: false,
-        error: error.response?.data?.message || "error reseting password ",
-      });
+      console.error("forgotPassword error:", error);
+      set({ isLoading: false, error: "Error resetting password" });
       throw error;
     }
   },
 
   resetPassword: async (token, password) => {
     set({ isLoading: true, error: null });
-
     try {
       await axios.post(`${API_URL}/reset-password/${token}`, { password });
       set({ isLoading: false });
     } catch (error) {
-      set({
-        isLoading: false,
-        error: error.response?.data?.message || "error resetting password ",
-      });
+      console.error("resetPassword error:", error);
+      set({ isLoading: false, error: "Error resetting password" });
       throw error;
+    }
+  },
+
+  refreshAccessToken: async () => {
+    try {
+      const response = await axios.get(`${API_URL}/refresh-token`);
+      return response;
+    } catch (error) {
+      console.error("Refresh token failed", error);
+      set({ user: null, isAuthenticated: false });
+      throw error;
+    }
+  },
+
+  // --- APPS METHODS ---
+  getApps: async () => {
+    set({ isLoadingApps: true, appError: null });
+
+    try {
+      const res = await axios.get(`${API_URL}/apps`, { withCredentials: true });
+      set({ apps: res.data.apps, isLoadingApps: false });
+    } catch (err) {
+      if (err.response?.status === 401) {
+        try {
+          await get().refreshAccessToken();
+          const retryRes = await axios.get(`${API_URL}/apps`, { withCredentials: true });
+          set({ apps: retryRes.data.apps, isLoadingApps: false });
+        } catch (refreshErr) {
+          if (!get().sessionExpiredNotified) {
+            set({ sessionExpiredNotified: true });
+            toast.error("Session expired, user must log in again"); // keep for now
+          }
+          set({
+            isAuthenticated: false,
+            isLoadingApps: false,
+            apps: [],
+            appError: "Session expired. Please log in again.",
+          });
+          console.error(refreshErr);
+        }
+      } else {
+        console.error("getApps error:", err);
+        set({
+          isLoadingApps: false,
+          appError: err.response?.data?.message || "Internal server error",
+        });
+      }
+    }
+  },
+
+  createApp: async (name) => {
+    set({ isLoadingApps: true, appError: null });
+
+    try {
+      const res = await axios.post(
+        `${API_URL}/apps/create-app`,
+        { name },
+        { headers: { "Content-Type": "application/json" }, withCredentials: true }
+      );
+
+      set((state) => ({
+        apps: [...state.apps, res.data.app],
+        isLoadingApps: false,
+      }));
+
+      console.log("App created, API key:", res.data.app.apiKey);
+      return {newApp:{...res.data.app}, apiKey: res.data.apiKey};
+    } catch (err) {
+      set({ appError: err.response?.data?.message || "Internal server error", isLoadingApps: false });
+      console.error("Create app error:", err);
+      throw err;
+    }
+  },
+
+  deleteApp: async (appId) => {
+    set({ isLoadingApps: true, appError: null });
+
+    try {
+      await axios.delete(`${API_URL}/apps/${appId}`, {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
+      });
+
+      set((state) => ({
+        apps: state.apps.filter((app) => app._id !== appId),
+        isLoadingApps: false,
+      }));
+
+      console.log("App deleted successfully");
+    } catch (err) {
+      set({ appError: err.response?.data?.message || "Internal server error", isLoadingApps: false });
+      console.error("Delete app error:", err);
+      throw err;
     }
   },
 }));

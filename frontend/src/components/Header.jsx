@@ -10,6 +10,7 @@ export default function Header() {
   const dropdownRef = useRef(null);
 
   useEffect(() => {
+   
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsMenuOpen(false);
@@ -24,6 +25,7 @@ export default function Header() {
 
   const handleLogout = async () => {
     try {
+      
       await logout();
     } catch (error) {
       console.error(error);

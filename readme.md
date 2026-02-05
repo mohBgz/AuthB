@@ -78,3 +78,144 @@ https://github.com/user-attachments/assets/665466ec-df09-4a77-b6e4-5f65f734e05d
 ## License
 
 This project is open source and available under the MIT License.
+
+```
+
+MERN-Auth-App
+├─ backend
+│  ├─ controllers
+│  │  ├─ app.controller.js
+│  │  ├─ appAuth.controller.js
+│  │  └─ auth.controller.js
+│  ├─ db
+│  │  └─ connectDB.js
+│  ├─ index.js
+│  ├─ mail
+│  │  ├─ email.config.js
+│  │  ├─ email.js
+│  │  └─ emailTemplate.js
+│  ├─ middleware
+│  │  ├─ rateLimiters.js
+│  │  └─ verifyDashboardAccessToken.js
+│  ├─ models
+│  │  ├─ clientApp.model.js
+│  │  ├─ devUser.model.js
+│  │  └─ user.model.js
+│  ├─ package-lock.json
+│  ├─ package.json
+│  ├─ routes
+│  │  ├─ app.route.js
+│  │  ├─ appAuth.route.js
+│  │  └─ auth.route.js
+│  └─ utils
+│     ├─ appAuth.js
+│     ├─ dashboardAuth.js
+│     └─ generateVerificationToken.js
+├─ frontend
+│  ├─ eslint.config.js
+│  ├─ index.html
+│  ├─ package-lock.json
+│  ├─ package.json
+│  ├─ public
+│  ├─ src
+│  │  ├─ App.css
+│  │  ├─ App.jsx
+│  │  ├─ components
+│  │  │  ├─ AppCard.jsx
+│  │  │  ├─ FloatingShape.jsx
+│  │  │  ├─ Header.jsx
+│  │  │  ├─ Input.jsx
+│  │  │  ├─ LoadingSpinner.jsx
+│  │  │  └─ PasswordStrengthMeter.jsx
+│  │  ├─ main.jsx
+│  │  ├─ pages
+│  │  │  ├─ Dashboard.jsx
+│  │  │  ├─ ForgotPassword.jsx
+│  │  │  ├─ HomePage.jsx
+│  │  │  ├─ LoginPage.jsx
+│  │  │  ├─ NotFoundPage.jsx
+│  │  │  ├─ PasswordResetConfirmation.jsx
+│  │  │  ├─ ResetPassword.jsx
+│  │  │  ├─ SignupPage.jsx
+│  │  │  └─ VerifyEmail.jsx
+│  │  ├─ store
+│  │  │  ├─ app-sotre.js
+│  │  │  └─ auth-store.js
+│  │  └─ utils
+│  │     ├─ date.js
+│  │     ├─ formatKey.js
+│  │     └─ motionVariants.js
+│  └─ vite.config.js
+└─ readme.md
+
+```
+```
+MERN-Auth-App
+├─ backend
+│  ├─ controllers
+│  │  ├─ app.controller.js
+│  │  ├─ appAuth.controller.js
+│  │  └─ auth.controller.js
+│  ├─ db
+│  │  └─ connectDB.js
+│  ├─ index.js
+│  ├─ mail
+│  │  ├─ email.config.js
+│  │  ├─ email.js
+│  │  └─ emailTemplate.js
+│  ├─ middleware
+│  │  ├─ rateLimiters.js
+│  │  ├─ verifyApiKey.js
+│  │  └─ verifyDashboardAccessToken.js
+│  ├─ models
+│  │  ├─ clientApp.model.js
+│  │  ├─ devUser.model.js
+│  │  └─ user.model.js
+│  ├─ package-lock.json
+│  ├─ package.json
+│  ├─ routes
+│  │  ├─ app.route.js
+│  │  ├─ appAuth.route.js
+│  │  └─ auth.route.js
+│  └─ utils
+│     ├─ appAuth.js
+│     ├─ dashboardAuth.js
+│     └─ generateVerificationToken.js
+├─ frontend
+│  ├─ eslint.config.js
+│  ├─ index.html
+│  ├─ package-lock.json
+│  ├─ package.json
+│  ├─ public
+│  ├─ src
+│  │  ├─ App.css
+│  │  ├─ App.jsx
+│  │  ├─ components
+│  │  │  ├─ AppCard.jsx
+│  │  │  ├─ FloatingShape.jsx
+│  │  │  ├─ Header.jsx
+│  │  │  ├─ Input.jsx
+│  │  │  ├─ LoadingSpinner.jsx
+│  │  │  └─ PasswordStrengthMeter.jsx
+│  │  ├─ main.jsx
+│  │  ├─ pages
+│  │  │  ├─ Dashboard.jsx
+│  │  │  ├─ ForgotPassword.jsx
+│  │  │  ├─ HomePage.jsx
+│  │  │  ├─ LoginPage.jsx
+│  │  │  ├─ NotFoundPage.jsx
+│  │  │  ├─ PasswordResetConfirmation.jsx
+│  │  │  ├─ ResetPassword.jsx
+│  │  │  ├─ SignupPage.jsx
+│  │  │  └─ VerifyEmail.jsx
+│  │  ├─ store
+│  │  │  ├─ app-sotre.js
+│  │  │  └─ auth-store.js
+│  │  └─ utils
+│  │     ├─ date.js
+│  │     ├─ formatKey.js
+│  │     └─ motionVariants.js
+│  └─ vite.config.js
+└─ readme.md
+
+```

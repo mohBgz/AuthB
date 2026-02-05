@@ -17,7 +17,7 @@ const clientAppSchema = new mongoose.Schema(
     ownerId: {
       // who owns this app (developer)
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "DevUser",
       required: true,
     },
 
