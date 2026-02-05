@@ -1,29 +1,40 @@
 # AuthB
 
-AuthB is a secure authentication platform built on the **MERN stack**. It provides robust sign-in and login functionality with modern security features.
+**AuthB** is a **modular authentication API** built on the **MERN stack**. It enables **third-party client applications** to integrate secure authentication flows, including signup, login, password reset, and email-based two-factor authentication (2FA).
 
 ---
 
 ## Features
 
-- **Two-Factor Authentication (2FA)**: Verification codes sent to the user's email.
-- **JWT Token Management**: Securely manages user sessions.
-- **Password Reset**: Allows users to reset their password with email notifications.
-- **reCAPTCHA Integration**: Added on the frontend for enhanced security.
+### **Developer Dashboard**
+- Register as a developer (`DevUser`)
+- Create, list, delete, and manage client applications
+- Obtain **API keys** for integrating AuthB into your applications
+
+### **Client App Authentication**
+- End-user registration and login, **scoped per client app** (`appId`)
+- Email-based **Two-Factor Authentication (2FA)**
+- Password reset flows
+- **JWT-based session management**
+- **reCAPTCHA** support on the frontend
+
+### **Security**
+- Password hashing via **bcrypt** (optional **argon2**)
+- **JWTs** with short-lived access tokens and refresh token rotation
+- API keys hashed with **SHA-256**
+- Rate limiting on critical endpoints
 
 ---
 
 ## Project Status
 
-🚧 **Work in progress**  
+🚧 **Work in Progress**
 
-- Auth B is currently being developed as a **modular authentication API**.  
-- At this stage, the application is **fully functional for authentication flows only** (sign up, login, password reset, 2FA).  
-- The project is **not deployed**; at the moment, **only the frontend can be tested locally**, while backend email-based features are limited to verified addresses.  
-- Both backend services and UI components are actively evolving.
-
-> **Note:**  
-> Email-based features (2FA, password reset) are demonstrated using verified email addresses due to **AWS SES sandbox restrictions**.
+- **Fully functional** for developer and end-user authentication flows
+- Dashboard (`DevUser`) and Client App (`User`) APIs implemented
+- Email-based features (2FA, password reset) work with **verified addresses only** due to **AWS SES sandbox restrictions**
+- **Local testing** supported; deployment pending
+- Rate limiters are defined, but only the **OTP limiter is applied**; global/signup/login limiters are not yet active
 
 ---
 
@@ -45,177 +56,111 @@ https://github.com/user-attachments/assets/bf054def-68d2-4910-803f-a99821ebe600
 
 ## Security Notice
 
-- **AWS SES sandbox mode** restricts email delivery to verified addresses.  
-- **Rate-limiting** is enabled on login and password reset endpoints to prevent abuse.  
-- **Passwords** are securely hashed using bcrypt or argon2.  
-- **JWT tokens** are used for session management; they should be transmitted over HTTPS with short expiration times.  
-- reCAPTCHA prevents automated login attempts.  
-- No secrets or sensitive credentials are included in the repository.
+- Emails are restricted to **verified addresses** (AWS SES sandbox)
+- **Rate limiting** on OTP verification prevents abuse
+- **Passwords** are securely hashed
+- **JWT tokens** are transmitted over HTTPS with short expiration
+- **reCAPTCHA** protects against automated login attempts
+- **No secrets or credentials** are stored in the repository
 
 ---
 
 ## Tech Stack
 
-### Frontend
-- **React** – UI library for building dynamic interfaces.  
-- **Tailwind CSS** – Utility-first CSS framework for styling.  
-- **React Router DOM** – Client-side routing.  
-- **Vite** – Fast development server and build tool.  
+### **Frontend**
+- **React** – UI library
+- **Tailwind CSS** – Styling
+- **Vite** – Dev server and build tool
+- **React Router DOM** – Client-side routing
+- **Zustand** – State management
+- **Axios** – API requests with credentials
+- **react-google-recaptcha** – Optional bot protection
 
-### Backend
-- **Node.js & Express** – Server-side runtime and framework.  
-- **MongoDB + Mongoose** – NoSQL database and ORM for managing data.  
-- **JWT (jsonwebtoken)** – Token-based authentication.  
-- **AWS SES (via Nodemailer)** – Email delivery for 2FA and password resets.  
+### **Backend**
+- **Node.js & Express** – Server runtime & framework
+- **MongoDB + Mongoose** – Database
+- **JWT (jsonwebtoken)** – Token-based authentication
+- **bcrypt / argon2** – Password hashing
+- **AWS SES / Nodemailer** – Email delivery for 2FA & password reset
 
-### Security & Authentication
-- **Two-Factor Authentication (2FA)** – Added email verification step.  
-- **reCAPTCHA** – Prevents automated attacks.  
-- **bcrypt / argon2** – Password hashing for secure storage.  
+### **Security & Authentication**
+- **Developer JWTs**: `accessToken` + `refreshToken`, `httpOnly` cookies
+- **End-user JWTs**: Scoped by `appId`
+- **API Key Verification**: SHA-256 hash, `x-api-key` header
+- **Verification OTP**: 6-digit code with 10-minute expiry
+- **Password Reset Tokens**: 15-minute expiry, crypto-generated
+
+---
+
+## Project Structure
+
+```
+AuthB/
+├─ backend/
+│  ├─ controllers/        # DevUser & User auth logic
+│  ├─ db/connectDB.js     # MongoDB connection
+│  ├─ mail/               # SES & email templates
+│  ├─ middleware/         # Verify tokens, rate limiters
+│  ├─ models/             # DevUser, ClientApp, User schemas
+│  ├─ routes/             # /api/dashboard, /api/dashboard/apps, /api/apps/auth
+│  ├─ utils/              # JWT helpers, OTP generator
+│  └─ index.js
+├─ frontend/
+│  ├─ src/
+│  │  ├─ pages/           # Login, Signup, Dashboard, ResetPassword, VerifyEmail
+│  │  ├─ components/      # Input, LoadingSpinner, PasswordStrengthMeter, AppCard
+│  │  └─ store/           # auth-store.js, app-store.js
+│  └─ vite.config.js
+└─ README.md
+```
+
+---
+
+## API Routes Overview
+
+### **Developer Dashboard (`/api/dashboard`)**
+- `POST /signup` – DevUser signup
+- `POST /login` – DevUser login
+- `POST /logout` – DevUser logout
+- `POST /verify-email` – OTP verification (rate-limited)
+- `POST /resend-otp` – Resend OTP
+- `POST /forgot-password` – Forgot password
+- `POST /reset-password/:token` – Reset password
+- `GET /refresh-token` – Refresh JWT
+- `GET /check-auth` – Session check (JWT required)
+
+### **Client App Management (`/api/dashboard/apps`)**
+- `POST /create-app` – Create client app
+- `GET /` – List apps
+- `DELETE /:appId` – Delete app
+- `PATCH /:appId` – Regenerate API key
+
+### **End-User Authentication (`/api/apps/auth`, `x-api-key` required)**
+- `POST /register` – End-user signup
+- `POST /login` – End-user login
+- `POST /verify-email` – OTP verification (rate-limited)
+- `POST /resend-otp` – Resend OTP
+- `POST /forgot-password` – Forgot password
+- `POST /reset-password/:token` – Reset password
+- `GET /refresh-token` – Refresh JWT
+- `GET /me` – Current user info (JWT cookie required)
+- `GET /logout` – Logout user
+
+> **Note:** Only OTP verification uses the limiter; signup/login/global limiters are defined but not yet applied.
+
+---
+
+## Environment Variables
+
+- `MONGO_URI` – MongoDB connection
+- `PORT` – Server port
+- `DASHBOARD_ACCESS_JWT_SECRET` – DevUser JWT secret
+- `USER_ACCESS_JWT_SECRET` – End-user JWT secret
+- `CLIENT_URL` – Frontend URL for email links
+- AWS SES credentials & region
 
 ---
 
 ## License
 
 This project is open source and available under the MIT License.
-
-```
-
-MERN-Auth-App
-├─ backend
-│  ├─ controllers
-│  │  ├─ app.controller.js
-│  │  ├─ appAuth.controller.js
-│  │  └─ auth.controller.js
-│  ├─ db
-│  │  └─ connectDB.js
-│  ├─ index.js
-│  ├─ mail
-│  │  ├─ email.config.js
-│  │  ├─ email.js
-│  │  └─ emailTemplate.js
-│  ├─ middleware
-│  │  ├─ rateLimiters.js
-│  │  └─ verifyDashboardAccessToken.js
-│  ├─ models
-│  │  ├─ clientApp.model.js
-│  │  ├─ devUser.model.js
-│  │  └─ user.model.js
-│  ├─ package-lock.json
-│  ├─ package.json
-│  ├─ routes
-│  │  ├─ app.route.js
-│  │  ├─ appAuth.route.js
-│  │  └─ auth.route.js
-│  └─ utils
-│     ├─ appAuth.js
-│     ├─ dashboardAuth.js
-│     └─ generateVerificationToken.js
-├─ frontend
-│  ├─ eslint.config.js
-│  ├─ index.html
-│  ├─ package-lock.json
-│  ├─ package.json
-│  ├─ public
-│  ├─ src
-│  │  ├─ App.css
-│  │  ├─ App.jsx
-│  │  ├─ components
-│  │  │  ├─ AppCard.jsx
-│  │  │  ├─ FloatingShape.jsx
-│  │  │  ├─ Header.jsx
-│  │  │  ├─ Input.jsx
-│  │  │  ├─ LoadingSpinner.jsx
-│  │  │  └─ PasswordStrengthMeter.jsx
-│  │  ├─ main.jsx
-│  │  ├─ pages
-│  │  │  ├─ Dashboard.jsx
-│  │  │  ├─ ForgotPassword.jsx
-│  │  │  ├─ HomePage.jsx
-│  │  │  ├─ LoginPage.jsx
-│  │  │  ├─ NotFoundPage.jsx
-│  │  │  ├─ PasswordResetConfirmation.jsx
-│  │  │  ├─ ResetPassword.jsx
-│  │  │  ├─ SignupPage.jsx
-│  │  │  └─ VerifyEmail.jsx
-│  │  ├─ store
-│  │  │  ├─ app-sotre.js
-│  │  │  └─ auth-store.js
-│  │  └─ utils
-│  │     ├─ date.js
-│  │     ├─ formatKey.js
-│  │     └─ motionVariants.js
-│  └─ vite.config.js
-└─ readme.md
-
-```
-```
-MERN-Auth-App
-├─ backend
-│  ├─ controllers
-│  │  ├─ app.controller.js
-│  │  ├─ appAuth.controller.js
-│  │  └─ auth.controller.js
-│  ├─ db
-│  │  └─ connectDB.js
-│  ├─ index.js
-│  ├─ mail
-│  │  ├─ email.config.js
-│  │  ├─ email.js
-│  │  └─ emailTemplate.js
-│  ├─ middleware
-│  │  ├─ rateLimiters.js
-│  │  ├─ verifyApiKey.js
-│  │  └─ verifyDashboardAccessToken.js
-│  ├─ models
-│  │  ├─ clientApp.model.js
-│  │  ├─ devUser.model.js
-│  │  └─ user.model.js
-│  ├─ package-lock.json
-│  ├─ package.json
-│  ├─ routes
-│  │  ├─ app.route.js
-│  │  ├─ appAuth.route.js
-│  │  └─ auth.route.js
-│  └─ utils
-│     ├─ appAuth.js
-│     ├─ dashboardAuth.js
-│     └─ generateVerificationToken.js
-├─ frontend
-│  ├─ eslint.config.js
-│  ├─ index.html
-│  ├─ package-lock.json
-│  ├─ package.json
-│  ├─ public
-│  ├─ src
-│  │  ├─ App.css
-│  │  ├─ App.jsx
-│  │  ├─ components
-│  │  │  ├─ AppCard.jsx
-│  │  │  ├─ FloatingShape.jsx
-│  │  │  ├─ Header.jsx
-│  │  │  ├─ Input.jsx
-│  │  │  ├─ LoadingSpinner.jsx
-│  │  │  └─ PasswordStrengthMeter.jsx
-│  │  ├─ main.jsx
-│  │  ├─ pages
-│  │  │  ├─ Dashboard.jsx
-│  │  │  ├─ ForgotPassword.jsx
-│  │  │  ├─ HomePage.jsx
-│  │  │  ├─ LoginPage.jsx
-│  │  │  ├─ NotFoundPage.jsx
-│  │  │  ├─ PasswordResetConfirmation.jsx
-│  │  │  ├─ ResetPassword.jsx
-│  │  │  ├─ SignupPage.jsx
-│  │  │  └─ VerifyEmail.jsx
-│  │  ├─ store
-│  │  │  ├─ app-sotre.js
-│  │  │  └─ auth-store.js
-│  │  └─ utils
-│  │     ├─ date.js
-│  │     ├─ formatKey.js
-│  │     └─ motionVariants.js
-│  └─ vite.config.js
-└─ readme.md
-
-```
